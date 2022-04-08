@@ -1,13 +1,31 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import Stats from 'stats.js';
 import './App.css';
 import checker from 'assets/checker.png';
+import corona_bk from 'assets/skybox/corona_bk.png';
+import corona_dn from 'assets/skybox/corona_dn.png';
+import corona_ft from 'assets/skybox/corona_ft.png';
+import corona_lf from 'assets/skybox/corona_lf.png';
+import corona_rt from 'assets/skybox/corona_rt.png';
+import corona_up from 'assets/skybox/corona_up.png';
+import { ReactComponent as Logo } from 'assets/logo.svg';
+
+const manager = new THREE.LoadingManager();
+let setDone = () => {};
+manager.onProgress = (item, loaded, total) => {
+  console.log(item, loaded, total);
+  if (loaded === total) {
+    setDone();
+  }
+};
 
 const stats = new Stats();
 document.body.appendChild(stats.dom);
+
+const scene = new THREE.Scene();
 
 const camera = new THREE.PerspectiveCamera(
   50,
@@ -15,13 +33,21 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   100
 );
-camera.position.set(0, 10, 20);
+camera.position.set(0, 10, 22);
 
-const scene = new THREE.Scene();
+const sky = new THREE.CubeTextureLoader(manager).load([
+  corona_ft,
+  corona_bk,
+  corona_up,
+  corona_dn,
+  corona_rt,
+  corona_lf,
+]);
+scene.background = sky;
 
 const planeSize = 40;
 
-const texture = new THREE.TextureLoader().load(checker);
+const texture = new THREE.TextureLoader(manager).load(checker);
 texture.wrapS = THREE.RepeatWrapping;
 texture.wrapT = THREE.RepeatWrapping;
 texture.magFilter = THREE.NearestFilter;
@@ -41,7 +67,7 @@ mesh.position.set(0, -0.1, 0);
 mesh.receiveShadow = true;
 scene.add(mesh);
 
-scene.add(new THREE.HemisphereLight(0xb1e1ff, 0xb97a20, 0.3));
+scene.add(new THREE.HemisphereLight(0xb1e1ff, 0xb97a20, 0.1));
 
 const light = new THREE.SpotLight(0xffffff, 1);
 light.position.set(15, 20, 10);
@@ -63,7 +89,7 @@ scene.add(light.target);
 
 let military: THREE.Group | null = null;
 const pivotPoint = new THREE.Object3D();
-new GLTFLoader().load(
+new GLTFLoader(manager).load(
   require('assets/military-base/military-base.glb'),
   (e) => {
     military = e.scene;
@@ -93,6 +119,10 @@ scene.add(sphereMesh);
 
 function App() {
   const ref = useRef<HTMLCanvasElement>(null);
+
+  const [loading, setLoading] = useState(true);
+  setDone = () => setLoading(false);
+  const [showLoading, setShowLoading] = useState(true);
 
   useEffect(() => {
     const renderer = new THREE.WebGLRenderer({
@@ -139,6 +169,7 @@ function App() {
     const clock = new THREE.Clock();
     let delta = 0;
     const interval = 1 / 120;
+
     function update() {
       requestAnimationFrame(update);
 
@@ -166,8 +197,24 @@ function App() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!loading)
+      setTimeout(() => {
+        setShowLoading(false);
+      }, 499);
+  }, [loading]);
+
   return (
     <div className="App">
+      {!!showLoading && (
+        <div className="loading" style={{ opacity: loading ? '1' : '0' }}>
+          <div>
+            <Logo />
+            Loading...
+          </div>
+        </div>
+      )}
+
       <canvas ref={ref}></canvas>
     </div>
   );
