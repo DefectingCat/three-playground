@@ -45,5 +45,6 @@
   "devDependencies": {
     "@types/stats.js": "^0.17.0",
     "@types/three": "^0.139.0"
-  }
+  },
+  "homepage": "/three-test"
 }
