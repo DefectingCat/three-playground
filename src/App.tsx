@@ -1,10 +1,13 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-
+import Stats from 'stats.js';
 import './App.css';
 import checker from 'assets/checker.png';
+
+const stats = new Stats();
+document.body.appendChild(stats.dom);
 
 const camera = new THREE.PerspectiveCamera(
   50,
@@ -74,6 +77,7 @@ function App() {
     }
 
     function render() {
+      stats.begin();
       if (resizeRenderToDisplaySize(renderer)) {
         const canvas = renderer.domElement;
         camera.aspect = canvas.clientWidth / canvas.clientHeight;
@@ -82,6 +86,7 @@ function App() {
       if (windmill) windmill.rotateY(0.01);
 
       renderer.render(scene, camera);
+      stats.end();
 
       requestAnimationFrame(render);
     }
