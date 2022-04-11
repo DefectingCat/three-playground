@@ -4,90 +4,84 @@ import background from 'assets/equirectangular-panorama/background.jpg';
 import LoadingScreen from 'components/LoadingScreen/LoadingScreen';
 import Stats from 'stats.js';
 
-const manager = new THREE.LoadingManager();
-let setDone = () => {};
-manager.onProgress = (item, loaded, total) => {
-  if (loaded === total) {
-    setDone();
-  }
-};
-
 const stats = new Stats();
-document.body.appendChild(stats.dom);
-
-const scene = new THREE.Scene();
-
-const camera = new THREE.PerspectiveCamera(
-  75,
-  window.innerWidth / window.innerHeight,
-  0.1,
-  1000
-);
-camera.lookAt(0, 0, 0);
-
-const textureLoader = new THREE.TextureLoader(manager);
-// sky.mapping = THREE.EquirectangularReflectionMapping;
-// scene.background = sky;
-
-{
-  const geometry = new THREE.SphereGeometry(camera.far / 2, 60, 40);
-  geometry.scale(-1, 1, 1);
-  const material = new THREE.MeshBasicMaterial({
-    map: textureLoader.load(background),
-    side: THREE.FrontSide,
-  });
-  const mesh = new THREE.Mesh(geometry, material);
-  scene.add(mesh);
-}
-
-const cameraParams = {
-  isUserInteracting: false,
-  onMouseDownMouseX: 0,
-  onMouseDownMouseY: 0,
-  lon: 0,
-  onMouseDownLon: 0,
-  lat: 0,
-  onMouseDownLat: 0,
-  phi: 0,
-  theta: 0,
-};
-
-function onWindowMouseDown(e: MouseEvent) {
-  e.preventDefault();
-
-  cameraParams.isUserInteracting = true;
-  cameraParams.onMouseDownMouseX = e.clientX;
-  cameraParams.onMouseDownMouseY = e.clientY;
-  cameraParams.onMouseDownLon = cameraParams.lon;
-  cameraParams.onMouseDownLat = cameraParams.lat;
-}
-function onWindowMouseMove(e: MouseEvent) {
-  if (cameraParams.isUserInteracting) {
-    cameraParams.lon =
-      (cameraParams.onMouseDownMouseX - e.clientX) * 0.1 +
-      cameraParams.onMouseDownLon;
-    cameraParams.lat =
-      (e.clientY - cameraParams.onMouseDownMouseY) * 0.1 +
-      cameraParams.onMouseDownLat;
-  }
-}
-function onWindowMouseUp(e: MouseEvent) {
-  cameraParams.isUserInteracting = false;
-}
-function onWindowMouseWheel(e: WheelEvent) {
-  camera.fov += e.deltaY * 0.05;
-  camera.fov = Math.max(camera.fov, 10);
-  camera.fov = Math.min(camera.fov, 75);
-  camera.updateProjectionMatrix();
-}
 
 const Equirectangular: FC = () => {
   const ref = useRef<HTMLCanvasElement>(null);
 
   const [loading, setLoading] = useState(true);
-  setDone = () => setLoading(false);
+
+  const manager = new THREE.LoadingManager();
+  manager.onProgress = (item, loaded, total) => {
+    if (loaded === total) setLoading(false);
+  };
+
+  const scene = new THREE.Scene();
+
+  const camera = new THREE.PerspectiveCamera(
+    75,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    1000
+  );
+  camera.lookAt(0, 0, 0);
+
+  const textureLoader = new THREE.TextureLoader(manager);
+
+  const geometry = new THREE.SphereGeometry(camera.far / 2, 60, 40);
+  geometry.scale(-1, 1, 1);
+  const texture = textureLoader.load(background);
+  const material = new THREE.MeshBasicMaterial({
+    map: texture,
+    side: THREE.FrontSide,
+  });
+  const mesh = new THREE.Mesh(geometry, material);
+  scene.add(mesh);
+
+  const cameraParams = {
+    isUserInteracting: false,
+    onMouseDownMouseX: 0,
+    onMouseDownMouseY: 0,
+    lon: 0,
+    onMouseDownLon: 0,
+    lat: 0,
+    onMouseDownLat: 0,
+    phi: 0,
+    theta: 0,
+  };
+
+  function onWindowMouseDown(e: MouseEvent) {
+    e.preventDefault();
+
+    cameraParams.isUserInteracting = true;
+    cameraParams.onMouseDownMouseX = e.clientX;
+    cameraParams.onMouseDownMouseY = e.clientY;
+    cameraParams.onMouseDownLon = cameraParams.lon;
+    cameraParams.onMouseDownLat = cameraParams.lat;
+  }
+  function onWindowMouseMove(e: MouseEvent) {
+    if (cameraParams.isUserInteracting) {
+      cameraParams.lon =
+        (cameraParams.onMouseDownMouseX - e.clientX) * 0.1 +
+        cameraParams.onMouseDownLon;
+      cameraParams.lat =
+        (e.clientY - cameraParams.onMouseDownMouseY) * 0.1 +
+        cameraParams.onMouseDownLat;
+    }
+  }
+  function onWindowMouseUp(e: MouseEvent) {
+    cameraParams.isUserInteracting = false;
+  }
+  function onWindowMouseWheel(e: WheelEvent) {
+    camera.fov += e.deltaY * 0.05;
+    camera.fov = Math.max(camera.fov, 10);
+    camera.fov = Math.min(camera.fov, 75);
+    camera.updateProjectionMatrix();
+  }
 
   useEffect(() => {
+    document.body.appendChild(stats.dom);
+
     const renderer = new THREE.WebGLRenderer({
       canvas: ref.current!,
       antialias: true,
@@ -152,6 +146,9 @@ const Equirectangular: FC = () => {
     window.addEventListener('wheel', onWindowMouseWheel);
 
     return () => {
+      geometry.dispose();
+      texture.dispose();
+      material.dispose();
       window.removeEventListener('resize', onWindowResize);
       window.removeEventListener('mousedown', onWindowMouseDown);
       window.removeEventListener('mousemove', onWindowMouseMove);

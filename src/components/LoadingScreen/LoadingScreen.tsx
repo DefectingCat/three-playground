@@ -20,7 +20,7 @@ const LoadingScreen: FC<Props> = ({ loading }) => {
     <>
       {!!showLoading && (
         <div className={style.loading} style={{ opacity: loading ? '1' : '0' }}>
-          <div>
+          <div className="flex justify-center items-center flex-col">
             <Logo />
             Loading...
           </div>
