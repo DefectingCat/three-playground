@@ -140,8 +140,8 @@ function FirstProject() {
     controls.target.set(0, 5, 0);
     controls.maxPolarAngle = Math.PI / 2;
     controls.enableZoom = false;
-    controls.update();
     controls.enablePan = false;
+    controls.update();
 
     function onWindowResize() {
       camera.aspect = window.innerWidth / window.innerHeight;
@@ -152,7 +152,6 @@ function FirstProject() {
     }
 
     function render() {
-      // military?.rotateY(0.01);
       renderer.render(scene, camera);
 
       const time = Date.now() * 0.0005;

@@ -7,6 +7,11 @@ const pages = [
     path: '/first-project',
     name: 'First Project',
   },
+  {
+    id: 1,
+    path: '/equirectangular',
+    name: 'Equirectangular',
+  },
 ];
 
 const Home: FC = () => {
