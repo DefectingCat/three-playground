@@ -12,6 +12,11 @@ const pages = [
     path: '/equirectangular',
     name: 'Equirectangular',
   },
+  {
+    id: 2,
+    path: '/skybox',
+    name: 'Skybox',
+  },
 ];
 
 const Home: FC = () => {

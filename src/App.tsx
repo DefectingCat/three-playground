@@ -6,6 +6,7 @@ const FirstProject = lazy(() => import('./pages/FirstProject/FirstProject'));
 const Equirectangular = lazy(
   () => import('./pages/Equirectangular/Equirectangular')
 );
+const Skybox = lazy(() => import('./pages/Skybox/Skybox'));
 
 function App() {
   return (
@@ -32,6 +33,14 @@ function App() {
           element={
             <Suspense fallback>
               <Equirectangular />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/skybox"
+          element={
+            <Suspense fallback>
+              <Skybox />
             </Suspense>
           }
         />

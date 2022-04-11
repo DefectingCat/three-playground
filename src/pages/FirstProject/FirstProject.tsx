@@ -13,116 +13,113 @@ import corona_up from 'assets/first-project/skybox/corona_up.png';
 import style from './FirstProject.module.css';
 import LoadingScreen from 'components/LoadingScreen/LoadingScreen';
 
-const manager = new THREE.LoadingManager();
-let setDone = () => {};
-manager.onProgress = (item, loaded, total) => {
-  if (loaded === total) {
-    setDone();
-  }
-};
-
-const stats = new Stats();
-document.body.appendChild(stats.dom);
-
-const scene = new THREE.Scene();
-
-const camera = new THREE.PerspectiveCamera(
-  50,
-  window.innerWidth / window.innerHeight,
-  0.1,
-  1000
-);
-camera.position.set(0, 10, 22);
-
-const sky = new THREE.CubeTextureLoader(manager).load([
-  corona_ft,
-  corona_bk,
-  corona_up,
-  corona_dn,
-  corona_rt,
-  corona_lf,
-]);
-scene.background = sky;
-
-const planeSize = 40;
-
-const texture = new THREE.TextureLoader(manager).load(checker);
-texture.wrapS = THREE.RepeatWrapping;
-texture.wrapT = THREE.RepeatWrapping;
-texture.magFilter = THREE.NearestFilter;
-
-const repeats = planeSize / 2;
-texture.repeat.set(repeats, repeats);
-
-const planeGeo = new THREE.PlaneBufferGeometry(planeSize, planeSize);
-const planeMat = new THREE.MeshPhongMaterial({
-  map: texture,
-  side: THREE.DoubleSide,
-});
-
-const mesh = new THREE.Mesh(planeGeo, planeMat);
-mesh.rotation.x = Math.PI * -0.5;
-mesh.position.set(0, -0.1, 0);
-mesh.receiveShadow = true;
-scene.add(mesh);
-
-scene.add(new THREE.HemisphereLight(0xb1e1ff, 0xb97a20, 0.1));
-
-const light = new THREE.SpotLight(0xffffff, 1);
-light.position.set(15, 20, 10);
-light.angle = Math.PI / 4;
-light.penumbra = 0.1;
-light.decay = 2;
-light.distance = 400;
-
-light.castShadow = true;
-light.shadow.mapSize.width = 1024;
-light.shadow.mapSize.height = 1024;
-light.shadow.camera.near = 500;
-light.shadow.camera.far = 4000;
-light.shadow.camera.fov = 30;
-light.shadow.focus = 1;
-light.target.position.set(0, 5, 0);
-scene.add(light);
-scene.add(light.target);
-
-let military: THREE.Group | null = null;
-const pivotPoint = new THREE.Object3D();
-new GLTFLoader(manager).load(
-  require('assets/first-project/military-base/military-base.glb'),
-  (e) => {
-    military = e.scene;
-    military.receiveShadow = true;
-    military.castShadow = true;
-    military.position.set(0, 0.2, 0);
-    scene.add(military);
-
-    const box = new THREE.Box3().setFromObject(military);
-    const boxSize = box.getSize(new THREE.Vector3()).length();
-    const boxCenter = box.getCenter(new THREE.Vector3());
-    console.log(boxSize);
-    console.log(boxCenter);
-
-    military.add(pivotPoint);
-    pivotPoint.add(light);
-  }
-);
-
-const sphereGeometry = new THREE.BoxBufferGeometry(2, 2, 2);
-const sphereMaterial = new THREE.MeshPhongMaterial({ color: 0x6ed3cf });
-const sphereMesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
-sphereMesh.position.set(0, 7, 0);
-sphereMesh.receiveShadow = true;
-sphereMesh.castShadow = true;
-scene.add(sphereMesh);
-
 function FirstProject() {
   const ref = useRef<HTMLCanvasElement>(null);
 
   const [loading, setLoading] = useState(true);
-  setDone = () => setLoading(false);
+
+  const stats = new Stats();
+
+  const manager = new THREE.LoadingManager();
+  manager.onProgress = (item, loaded, total) => {
+    if (loaded === total) setLoading(false);
+  };
+
+  const scene = new THREE.Scene();
+
+  const camera = new THREE.PerspectiveCamera(
+    50,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    1000
+  );
+  camera.position.set(0, 10, 22);
+
+  const sky = new THREE.CubeTextureLoader(manager).load([
+    corona_ft,
+    corona_bk,
+    corona_up,
+    corona_dn,
+    corona_rt,
+    corona_lf,
+  ]);
+  scene.background = sky;
+
+  const planeSize = 40;
+
+  const texture = new THREE.TextureLoader(manager).load(checker);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.magFilter = THREE.NearestFilter;
+
+  const repeats = planeSize / 2;
+  texture.repeat.set(repeats, repeats);
+
+  const planeGeo = new THREE.PlaneBufferGeometry(planeSize, planeSize);
+  const planeMat = new THREE.MeshPhongMaterial({
+    map: texture,
+    side: THREE.DoubleSide,
+  });
+
+  const mesh = new THREE.Mesh(planeGeo, planeMat);
+  mesh.rotation.x = Math.PI * -0.5;
+  mesh.position.set(0, -0.1, 0);
+  mesh.receiveShadow = true;
+  scene.add(mesh);
+
+  scene.add(new THREE.HemisphereLight(0xb1e1ff, 0xb97a20, 0.1));
+
+  const light = new THREE.SpotLight(0xffffff, 1);
+  light.position.set(15, 20, 10);
+  light.angle = Math.PI / 4;
+  light.penumbra = 0.1;
+  light.decay = 2;
+  light.distance = 400;
+
+  light.castShadow = true;
+  light.shadow.mapSize.width = 1024;
+  light.shadow.mapSize.height = 1024;
+  light.shadow.camera.near = 500;
+  light.shadow.camera.far = 4000;
+  light.shadow.camera.fov = 30;
+  light.shadow.focus = 1;
+  light.target.position.set(0, 5, 0);
+  scene.add(light);
+  scene.add(light.target);
+
+  let military: THREE.Group | null = null;
+  const pivotPoint = new THREE.Object3D();
+  new GLTFLoader(manager).load(
+    require('assets/first-project/military-base/military-base.glb'),
+    (e) => {
+      military = e.scene;
+      military.receiveShadow = true;
+      military.castShadow = true;
+      military.position.set(0, 0.2, 0);
+      scene.add(military);
+
+      const box = new THREE.Box3().setFromObject(military);
+      const boxSize = box.getSize(new THREE.Vector3()).length();
+      const boxCenter = box.getCenter(new THREE.Vector3());
+      console.log(boxSize);
+      console.log(boxCenter);
+
+      military.add(pivotPoint);
+      pivotPoint.add(light);
+    }
+  );
+
+  const sphereGeometry = new THREE.BoxBufferGeometry(2, 2, 2);
+  const sphereMaterial = new THREE.MeshPhongMaterial({ color: 0x6ed3cf });
+  const sphereMesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
+  sphereMesh.position.set(0, 7, 0);
+  sphereMesh.receiveShadow = true;
+  sphereMesh.castShadow = true;
+  scene.add(sphereMesh);
 
   useEffect(() => {
+    document.body.appendChild(stats.dom);
+
     const renderer = new THREE.WebGLRenderer({
       canvas: ref.current!,
       antialias: true,
@@ -185,15 +182,23 @@ function FirstProject() {
     window.addEventListener('resize', onWindowResize);
 
     return () => {
+      scene.clear();
+      camera.clear();
+      sky.dispose();
+      mesh.clear();
       texture.dispose();
       planeGeo.dispose();
       planeMat.dispose();
+      pivotPoint.clear();
+      military?.clear();
       light.dispose();
       sphereGeometry.dispose();
       sphereMaterial.dispose();
+      sphereMesh.clear();
       stats.dom.remove();
       window.removeEventListener('resize', onWindowResize);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

@@ -1,8 +1,13 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import background from 'assets/equirectangular-panorama/background.jpg';
 import LoadingScreen from 'components/LoadingScreen/LoadingScreen';
 import Stats from 'stats.js';
+import corona_bk from 'assets/first-project/skybox/corona_bk.png';
+import corona_dn from 'assets/first-project/skybox/corona_dn.png';
+import corona_ft from 'assets/first-project/skybox/corona_ft.png';
+import corona_lf from 'assets/first-project/skybox/corona_lf.png';
+import corona_rt from 'assets/first-project/skybox/corona_rt.png';
+import corona_up from 'assets/first-project/skybox/corona_up.png';
 
 const Equirectangular: FC = () => {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -26,17 +31,15 @@ const Equirectangular: FC = () => {
   );
   camera.lookAt(0, 0, 0);
 
-  const textureLoader = new THREE.TextureLoader(manager);
-
-  const geometry = new THREE.SphereGeometry(camera.far / 2, 60, 40);
-  geometry.scale(-1, 1, 1);
-  const texture = textureLoader.load(background);
-  const material = new THREE.MeshBasicMaterial({
-    map: texture,
-    side: THREE.FrontSide,
-  });
-  const mesh = new THREE.Mesh(geometry, material);
-  scene.add(mesh);
+  const sky = new THREE.CubeTextureLoader(manager).load([
+    corona_ft,
+    corona_bk,
+    corona_up,
+    corona_dn,
+    corona_rt,
+    corona_lf,
+  ]);
+  scene.background = sky;
 
   const cameraParams = {
     isUserInteracting: false,
@@ -147,11 +150,8 @@ const Equirectangular: FC = () => {
 
     return () => {
       camera.clear();
-      mesh.clear();
       scene.clear();
-      geometry.dispose();
-      texture.dispose();
-      material.dispose();
+
       window.removeEventListener('resize', onWindowResize);
       window.removeEventListener('mousedown', onWindowMouseDown);
       window.removeEventListener('mousemove', onWindowMouseMove);
