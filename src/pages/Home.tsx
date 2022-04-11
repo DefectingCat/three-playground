@@ -22,13 +22,20 @@ const pages = [
 const Home: FC = () => {
   return (
     <>
-      <ul>
-        {pages.map((page) => (
-          <li key={page.id}>
-            <Link to={page.path}>{page.name}</Link>
-          </li>
-        ))}
-      </ul>
+      <div className="max-w-5xl p-4 mx-auto">
+        <ul className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {pages.map((page) => (
+            <li key={page.id}>
+              <Link
+                to={page.path}
+                className="block p-4 bg-white rounded-md shadow-lg"
+              >
+                {page.name}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
     </>
   );
 };
