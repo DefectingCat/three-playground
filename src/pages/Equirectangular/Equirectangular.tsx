@@ -4,12 +4,12 @@ import background from 'assets/equirectangular-panorama/background.jpg';
 import LoadingScreen from 'components/LoadingScreen/LoadingScreen';
 import Stats from 'stats.js';
 
-const stats = new Stats();
-
 const Equirectangular: FC = () => {
   const ref = useRef<HTMLCanvasElement>(null);
 
   const [loading, setLoading] = useState(true);
+
+  const stats = new Stats();
 
   const manager = new THREE.LoadingManager();
   manager.onProgress = (item, loaded, total) => {
@@ -146,6 +146,9 @@ const Equirectangular: FC = () => {
     window.addEventListener('wheel', onWindowMouseWheel);
 
     return () => {
+      camera.clear();
+      mesh.clear();
+      scene.clear();
       geometry.dispose();
       texture.dispose();
       material.dispose();
