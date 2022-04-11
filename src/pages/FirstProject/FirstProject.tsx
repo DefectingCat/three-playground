@@ -4,14 +4,14 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import Stats from 'stats.js';
 import checker from 'assets/checker.png';
-import corona_bk from 'assets/skybox/corona_bk.png';
-import corona_dn from 'assets/skybox/corona_dn.png';
-import corona_ft from 'assets/skybox/corona_ft.png';
-import corona_lf from 'assets/skybox/corona_lf.png';
-import corona_rt from 'assets/skybox/corona_rt.png';
-import corona_up from 'assets/skybox/corona_up.png';
-import { ReactComponent as Logo } from 'assets/logo.svg';
+import corona_bk from 'assets/first-project/skybox/corona_bk.png';
+import corona_dn from 'assets/first-project/skybox/corona_dn.png';
+import corona_ft from 'assets/first-project/skybox/corona_ft.png';
+import corona_lf from 'assets/first-project/skybox/corona_lf.png';
+import corona_rt from 'assets/first-project/skybox/corona_rt.png';
+import corona_up from 'assets/first-project/skybox/corona_up.png';
 import style from './FirstProject.module.css';
+import LoadingScreen from 'components/LoadingScreen/LoadingScreen';
 
 const manager = new THREE.LoadingManager();
 let setDone = () => {};
@@ -30,7 +30,7 @@ const camera = new THREE.PerspectiveCamera(
   50,
   window.innerWidth / window.innerHeight,
   0.1,
-  100
+  1000
 );
 camera.position.set(0, 10, 22);
 
@@ -89,7 +89,7 @@ scene.add(light.target);
 let military: THREE.Group | null = null;
 const pivotPoint = new THREE.Object3D();
 new GLTFLoader(manager).load(
-  require('assets/military-base/military-base.glb'),
+  require('assets/first-project/military-base/military-base.glb'),
   (e) => {
     military = e.scene;
     military.receiveShadow = true;
@@ -109,7 +109,7 @@ new GLTFLoader(manager).load(
 );
 
 const sphereGeometry = new THREE.BoxBufferGeometry(2, 2, 2);
-const sphereMaterial = new THREE.MeshLambertMaterial({ color: 0x6ed3cf });
+const sphereMaterial = new THREE.MeshPhongMaterial({ color: 0x6ed3cf });
 const sphereMesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
 sphereMesh.position.set(0, 7, 0);
 sphereMesh.receiveShadow = true;
@@ -121,7 +121,6 @@ function FirstProject() {
 
   const [loading, setLoading] = useState(true);
   setDone = () => setLoading(false);
-  const [showLoading, setShowLoading] = useState(true);
 
   useEffect(() => {
     const renderer = new THREE.WebGLRenderer({
@@ -193,31 +192,15 @@ function FirstProject() {
       light.dispose();
       sphereGeometry.dispose();
       sphereMaterial.dispose();
+      stats.dom.remove();
       window.removeEventListener('resize', onWindowResize);
     };
   }, []);
 
-  useEffect(() => {
-    if (!loading)
-      setTimeout(() => {
-        setShowLoading(false);
-      }, 499);
-  }, [loading]);
-
   return (
     <>
       <div className={style.App}>
-        {!!showLoading && (
-          <div
-            className={style.loading}
-            style={{ opacity: loading ? '1' : '0' }}
-          >
-            <div>
-              <Logo />
-              Loading...
-            </div>
-          </div>
-        )}
+        <LoadingScreen loading={loading} />
 
         <canvas ref={ref}></canvas>
       </div>
