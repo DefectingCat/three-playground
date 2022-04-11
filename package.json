@@ -12,6 +12,7 @@
     "@types/react-dom": "^17.0.9",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
+    "react-router-dom": "6",
     "react-scripts": "5.0.0",
     "stats.js": "^0.17.0",
     "three": "^0.139.2",
@@ -44,7 +45,10 @@
   },
   "devDependencies": {
     "@types/stats.js": "^0.17.0",
-    "@types/three": "^0.139.0"
+    "@types/three": "^0.139.0",
+    "autoprefixer": "^10.4.4",
+    "postcss": "^8.4.12",
+    "tailwindcss": "^3.0.23"
   },
   "homepage": "/three-test"
 }
