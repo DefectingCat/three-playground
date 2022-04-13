@@ -17,6 +17,11 @@ const pages = [
     path: '/skybox',
     name: 'Skybox',
   },
+  {
+    id: 3,
+    path: '/solar-system',
+    name: 'Solar System',
+  },
 ];
 
 const Home: FC = () => {

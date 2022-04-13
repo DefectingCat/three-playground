@@ -9,6 +9,7 @@ const Equirectangular = lazy(
 );
 const Skybox = lazy(() => import('./pages/Skybox/Skybox'));
 const ThreeFiber = lazy(() => import('./pages/ThreeFiber/ThreeFiber'));
+const SolarSystem = lazy(() => import('./pages/SolarSystem/SolarSystem'));
 
 function App() {
   return (
@@ -43,6 +44,14 @@ function App() {
           element={
             <Suspense fallback>
               <Skybox />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/solar-system"
+          element={
+            <Suspense fallback>
+              <SolarSystem />
             </Suspense>
           }
         />
