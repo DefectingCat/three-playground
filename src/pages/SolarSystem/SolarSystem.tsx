@@ -172,8 +172,6 @@ const SolarSystem: FC = () => {
     }
 
     const render: FrameRequestCallback = (time) => {
-      console.log(time * 0.001);
-
       time *= 0.001;
 
       objects.forEach((o) => {
