@@ -10,8 +10,9 @@ class RUAThree {
     1000
   );
   renderer = new THREE.WebGLRenderer({ antialias: true });
-
   controls = new OrbitControls(this.camera, this.renderer.domElement);
+
+  static THREE = THREE;
 
   constructor() {
     this.renderer.setPixelRatio(window.devicePixelRatio);
@@ -25,23 +26,24 @@ class RUAThree {
     this.controls.enablePan = false;
     this.controls.update();
 
-    requestAnimationFrame(this.render());
+    // Callback needs to be bound to the correct 'this'.
+    this.render = this.render.bind(this);
+    requestAnimationFrame(this.render);
 
     window.addEventListener('resize', this.onWindowResize);
   }
 
   private renderQueue: ((time: DOMHighResTimeStamp) => void)[] = [];
 
-  private render() {
-    return (time: DOMHighResTimeStamp) => {
-      time *= 0.001;
+  private time: DOMHighResTimeStamp = 0;
+  private render(time: DOMHighResTimeStamp) {
+    this.time = time *= 0.001;
 
-      this.renderer.render(this.scene, this.camera);
+    this.renderer.render(this.scene, this.camera);
 
-      this.renderQueue.map((cb) => cb(time));
+    this.renderQueue.map((cb) => cb(this.time));
 
-      requestAnimationFrame(this.render());
-    };
+    requestAnimationFrame(this.render);
   }
 
   private onWindowResize() {
@@ -49,7 +51,7 @@ class RUAThree {
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(window.innerWidth, window.innerHeight);
 
-    this.render()(0);
+    this.render(this.time);
   }
 
   addRenderCallback(cb: (time: DOMHighResTimeStamp) => void) {

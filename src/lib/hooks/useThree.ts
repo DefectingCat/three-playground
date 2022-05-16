@@ -23,6 +23,7 @@ const useThree = () => {
   return {
     three: three.current,
     threeWrapper,
+    RUAThree,
   };
 };
 
