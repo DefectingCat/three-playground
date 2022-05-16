@@ -26,7 +26,7 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return <div ref={threeWrapper}></div>;
+  return <div ref={threeWrapper} className="cursor-move"></div>;
 }
 
 export default App;
