@@ -16,15 +16,15 @@ const useThree = () => {
     const s = three.current;
 
     return () => {
-      s.scene.clear();
+      s.clear();
     };
   }, []);
 
   return {
     three: three.current,
     threeWrapper,
-    RUAThree,
   };
 };
 
 export default useThree;
+export { THREE } from 'lib/three';

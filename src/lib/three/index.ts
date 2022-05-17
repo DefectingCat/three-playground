@@ -1,8 +1,23 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import ResourceTracker, { Disposable } from 'lib/three/ResourceTracker';
+
+class SceneWithTracker extends THREE.Scene {
+  constructor(private tracker: ResourceTracker<Disposable>) {
+    super();
+  }
+
+  add(...object: THREE.Object3D<THREE.Event>[]): this {
+    super.add(...object);
+    this.tracker.track(...object);
+    return this;
+  }
+}
 
 class RUAThree {
-  scene = new THREE.Scene();
+  private tracker = new ResourceTracker();
+
+  scene = new SceneWithTracker(this.tracker);
   camera = new THREE.PerspectiveCamera(
     75,
     window.innerWidth / window.innerHeight,
@@ -11,8 +26,6 @@ class RUAThree {
   );
   renderer = new THREE.WebGLRenderer({ antialias: true });
   controls = new OrbitControls(this.camera, this.renderer.domElement);
-
-  static THREE = THREE;
 
   constructor() {
     this.renderer.setPixelRatio(window.devicePixelRatio);
@@ -57,6 +70,12 @@ class RUAThree {
   addRenderCallback(cb: (time: DOMHighResTimeStamp) => void) {
     this.renderQueue.push(cb);
   }
+
+  clear() {
+    this.tracker.dispose();
+    this.scene.clear();
+  }
 }
 
 export default RUAThree;
+export { THREE };
