@@ -44,6 +44,8 @@ class RUAThree {
     requestAnimationFrame(this.render);
 
     window.addEventListener('resize', this.onWindowResize);
+
+    process.env.NODE_ENV === 'development' && (this.tracker.debug = true);
   }
 
   private renderQueue: ((time: DOMHighResTimeStamp) => void)[] = [];
