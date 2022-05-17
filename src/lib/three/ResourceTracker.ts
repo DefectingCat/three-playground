@@ -9,9 +9,15 @@ class ResourceTracker<T extends Disposable> {
   private debugMode = false;
 
   track(...object: (T | Object3D)[]) {
-    object.forEach(this.resources.add, this.resources);
+    object.forEach((item) => {
+      if ('dispose' in item || item instanceof Object3D) {
+        this.resources.add(item);
+      }
+    });
     if (this.debugMode)
       console.log('>>> Resource trakcer: add resource', object);
+
+    return object;
   }
 
   untrack(object: T | Object3D) {
@@ -22,14 +28,15 @@ class ResourceTracker<T extends Disposable> {
 
   dispose() {
     this.resources.forEach((resource) => {
+      if ('dispose' in resource) {
+        resource.dispose();
+        if (this.debugMode)
+          console.log('>>> Resource trakcer: dispose', resource);
+      }
       if (resource instanceof Object3D) {
         if (resource.parent) resource.parent.remove(resource);
         if (this.debugMode)
           console.log('>>> Resource trakcer: remove', resource);
-      } else {
-        resource.dispose();
-        if (this.debugMode)
-          console.log('>>> Resource trakcer: dispose', resource);
       }
     });
   }

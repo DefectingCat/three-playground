@@ -15,7 +15,7 @@ class SceneWithTracker extends THREE.Scene {
 }
 
 class RUAThree {
-  private tracker = new ResourceTracker();
+  tracker = new ResourceTracker();
 
   scene = new SceneWithTracker(this.tracker);
   camera = new THREE.PerspectiveCamera(
