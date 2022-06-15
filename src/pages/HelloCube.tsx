@@ -1,8 +1,10 @@
-import useThree, { THREE } from "lib/hooks/useThree";
-import { useEffect } from "react";
+import useStats from 'lib/hooks/useStats';
+import useThree, { THREE } from 'lib/hooks/useThree';
+import { useEffect } from 'react';
 
 const HelloCube = () => {
   const { three, threeWrapper } = useThree();
+  const { stats } = useStats();
 
   useEffect(() => {
     const geometry = new THREE.BoxGeometry(1, 1, 1);
@@ -14,6 +16,7 @@ const HelloCube = () => {
     const rotateCube = (time: DOMHighResTimeStamp) => {
       cube.rotation.x = time;
       cube.rotation.y = time;
+      stats.update();
     };
 
     three.camera.position.set(0, 0, 5);

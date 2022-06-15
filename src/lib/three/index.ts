@@ -36,7 +36,6 @@ class RUAThree {
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     // renderer.outputEncoding = THREE.sRGBEncoding;
 
-    this.controls.enablePan = false;
     this.controls.update();
 
     // Callback needs to be bound to the correct 'this'.
