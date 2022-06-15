@@ -14,6 +14,14 @@ class SceneWithTracker extends THREE.Scene {
   }
 }
 
+export type ThreeProps = {
+  rotateInversion?: boolean;
+};
+
+export const defaultProps = {
+  rotateInversion: false,
+};
+
 class RUAThree {
   tracker = new ResourceTracker();
 
@@ -27,7 +35,7 @@ class RUAThree {
   renderer = new THREE.WebGLRenderer({ antialias: true });
   controls = new OrbitControls(this.camera, this.renderer.domElement);
 
-  constructor() {
+  constructor({ rotateInversion }: ThreeProps) {
     this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -37,6 +45,8 @@ class RUAThree {
     // renderer.outputEncoding = THREE.sRGBEncoding;
 
     this.controls.update();
+    // Set controls rotate inversion must be in constructor.
+    if (rotateInversion) this.controls.rotateSpeed *= -1;
 
     // Callback needs to be bound to the correct 'this'.
     this.render = this.render.bind(this);

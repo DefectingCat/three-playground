@@ -1,8 +1,13 @@
-import RUAThree from 'lib/three';
+import RUAThree, { defaultProps, ThreeProps } from 'lib/three';
 import { useEffect, useRef } from 'react';
 
-const useThree = () => {
-  const three = useRef(new RUAThree());
+const useThree = (props?: ThreeProps) => {
+  const { rotateInversion } = props ? props : defaultProps;
+  const three = useRef(
+    new RUAThree({
+      rotateInversion,
+    })
+  );
 
   const threeWrapper = useRef<HTMLDivElement>(null);
 

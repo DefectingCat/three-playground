@@ -1,9 +1,27 @@
 import useStats from 'lib/hooks/useStats';
 import useThree, { THREE } from 'lib/hooks/useThree';
-import { useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
+import corona_bk from 'assets/images/corona/corona_bk.png';
+import corona_dn from 'assets/images/corona/corona_dn.png';
+import corona_ft from 'assets/images/corona/corona_ft.png';
+import corona_lf from 'assets/images/corona/corona_lf.png';
+import corona_rt from 'assets/images/corona/corona_rt.png';
+import corona_up from 'assets/images/corona/corona_up.png';
+
+const manager = new THREE.LoadingManager();
+const sky = new THREE.CubeTextureLoader(manager).load([
+  corona_ft,
+  corona_bk,
+  corona_up,
+  corona_dn,
+  corona_rt,
+  corona_lf,
+]);
 
 const HelloCube = () => {
-  const { three, threeWrapper } = useThree();
+  const { three, threeWrapper } = useThree({
+    rotateInversion: true,
+  });
   const { stats } = useStats();
 
   useEffect(() => {
@@ -16,11 +34,16 @@ const HelloCube = () => {
     const rotateCube = (time: DOMHighResTimeStamp) => {
       cube.rotation.x = time;
       cube.rotation.y = time;
+      three.controls.update();
+
       stats.update();
     };
 
+    three.scene.background = sky;
     three.camera.position.set(0, 0, 5);
     three.controls.target.set(0, 0, 0);
+    three.controls.autoRotate = true;
+    three.controls.autoRotateSpeed = 1;
 
     three.scene.add(cube);
     three.scene.add(light);
@@ -31,7 +54,33 @@ const HelloCube = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return <div ref={threeWrapper} className="cursor-move"></div>;
+  const lastID = useRef<NodeJS.Timeout>();
+  const handleDown: React.MouseEventHandler<HTMLDivElement> = useCallback(
+    (e) => {
+      three.controls.autoRotate = false;
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+  const handleUp: React.MouseEventHandler<HTMLDivElement> = useCallback(
+    (e) => {
+      clearTimeout(lastID.current);
+      lastID.current = setTimeout(() => {
+        three.controls.autoRotate = true;
+      }, 999);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+
+  return (
+    <div
+      ref={threeWrapper}
+      onMouseDown={handleDown}
+      onMouseUp={handleUp}
+      className="cursor-move"
+    ></div>
+  );
 };
 
 export default HelloCube;
