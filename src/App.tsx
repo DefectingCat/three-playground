@@ -4,6 +4,7 @@ import { Route, Routes } from 'react-router-dom';
 const Home = lazy(() => import('pages/Home'));
 const HelloCube = lazy(() => import('pages/HelloCube'));
 const Corona = lazy(() => import('pages/Corona'));
+const Github = lazy(() => import('pages/Github'));
 
 export const projects = [
   {
@@ -18,6 +19,12 @@ export const projects = [
     name: 'corona',
     element: <Corona />,
   },
+  {
+    id: 2,
+    path: '/github',
+    name: 'github',
+    element: <Github />,
+  },
 ];
 
 function App() {
@@ -28,7 +35,7 @@ function App() {
           <Route path="/" element={<Home />}></Route>
 
           {projects.map((p) => (
-            <Route path={p.path} element={p.element}></Route>
+            <Route key={p.path} path={p.path} element={p.element}></Route>
           ))}
         </Routes>
       </Suspense>

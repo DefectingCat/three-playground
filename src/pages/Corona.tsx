@@ -19,11 +19,27 @@ const sky = new THREE.CubeTextureLoader(manager).load([
 ]);
 
 const Corona = () => {
-  const { three, threeWrapper } = useThree();
+  const { three, threeWrapper } = useThree({
+    rotateInversion: true,
+  });
   const { stats } = useStats();
 
   useEffect(() => {
     three.scene.background = sky;
+
+    const update = (time: DOMHighResTimeStamp) => {
+      three.controls.update();
+
+      stats.update();
+    };
+
+    three.camera.position.set(0, 0, 5);
+    three.controls.target.set(0, 0, 0);
+    three.controls.autoRotate = true;
+    three.controls.autoRotateSpeed = 1;
+
+    three.addRenderCallback(update);
+
     stats.update();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
