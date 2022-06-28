@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import ResourceTracker, { Disposable } from 'lib/three/ResourceTracker';
+import { Vector3 } from 'three';
+import Stats from 'stats.js';
 
 class SceneWithTracker extends THREE.Scene {
   constructor(private tracker: ResourceTracker<Disposable>) {
@@ -38,6 +40,7 @@ class RUAThree {
   );
   renderer: THREE.WebGLRenderer;
   controls: OrbitControls;
+  stats: Stats | null = null;
 
   constructor({ rotateInversion, antialias, renderOnDemand }: ThreeProps) {
     this.renderer = new THREE.WebGLRenderer({ antialias });
@@ -70,7 +73,12 @@ class RUAThree {
 
     window.addEventListener('resize', this.onWindowResize);
 
-    process.env.NODE_ENV === 'development' && (this.tracker.debug = true);
+    if (process.env.NODE_ENV === 'development') {
+      this.tracker.debug = true;
+
+      this.stats = new Stats();
+      document.body.appendChild(this.stats.dom);
+    }
   }
 
   private renderQueue: ((time: DOMHighResTimeStamp) => void)[] = [];
@@ -83,6 +91,7 @@ class RUAThree {
     this.time = time *= 0.001;
     this.renderer.render(this.scene, this.camera);
     this.renderQueue.map((cb) => cb(this.time));
+    this.stats && this.stats.update();
 
     !this.renderOnDemand && requestAnimationFrame(this.render);
   }
@@ -105,9 +114,44 @@ class RUAThree {
     this.renderQueue.push(cb);
   }
 
+  frameArea(
+    sizeToFitOnScreen: number,
+    boxSize: number,
+    boxCenter: Vector3,
+    camera: THREE.PerspectiveCamera
+  ) {
+    const halfSizeToFitOnScreen = sizeToFitOnScreen * 0.5;
+    const halfFovY = THREE.MathUtils.degToRad(camera.fov * 0.5);
+    const distance = halfSizeToFitOnScreen / Math.tan(halfFovY);
+    // compute a unit vector that points in the direction the camera is now
+    // in the xz plane from the center of the box
+    const direction = new THREE.Vector3()
+      .subVectors(camera.position, boxCenter)
+      .multiply(new THREE.Vector3(1, 0, 1))
+      .normalize();
+
+    // move the camera to a position distance units way from the center
+    // in whatever direction the camera was from the center already
+    camera.position.copy(direction.multiplyScalar(distance).add(boxCenter));
+
+    console.log(boxCenter);
+
+    // pick some near and far values for the frustum that
+    // will contain the box.
+    camera.near = boxSize / 100;
+    camera.far = boxSize * 100;
+
+    camera.updateProjectionMatrix();
+
+    // point the camera to look at the center of the box
+    camera.lookAt(boxCenter.x, boxCenter.y, boxCenter.z);
+  }
+
   clear() {
     this.tracker.dispose();
     this.scene.clear();
+    window.removeEventListener('resize', this.onWindowResize);
+    this.stats?.dom.remove();
   }
 }
 

@@ -1,12 +1,11 @@
-import useStats from 'lib/hooks/useStats';
-import useThree, { THREE } from 'lib/hooks/useThree';
-import { useCallback, useEffect, useRef } from 'react';
 import corona_bk from 'assets/images/corona/corona_bk.png';
 import corona_dn from 'assets/images/corona/corona_dn.png';
 import corona_ft from 'assets/images/corona/corona_ft.png';
 import corona_lf from 'assets/images/corona/corona_lf.png';
 import corona_rt from 'assets/images/corona/corona_rt.png';
 import corona_up from 'assets/images/corona/corona_up.png';
+import useThree, { THREE } from 'lib/hooks/useThree';
+import { useCallback, useEffect, useRef } from 'react';
 
 const manager = new THREE.LoadingManager();
 const sky = new THREE.CubeTextureLoader(manager).load([
@@ -22,7 +21,6 @@ const HelloCube = () => {
   const { three, threeWrapper } = useThree({
     renderOnDemand: false,
   });
-  const { stats } = useStats();
 
   useEffect(() => {
     const geometry = new THREE.BoxGeometry(1, 1, 1);
@@ -35,8 +33,6 @@ const HelloCube = () => {
       cube.rotation.x = time;
       cube.rotation.y = time;
       three.controls.update();
-
-      stats.update();
     };
 
     three.scene.background = sky;

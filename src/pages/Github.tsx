@@ -1,4 +1,3 @@
-import useStats from 'lib/hooks/useStats';
 import useThree, { THREE } from 'lib/hooks/useThree';
 import { useEffect } from 'react';
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader';
@@ -15,7 +14,6 @@ const Github = () => {
   const { three, threeWrapper } = useThree({
     renderOnDemand: false,
   });
-  const { stats } = useStats();
 
   useEffect(() => {
     loader.load(
@@ -88,8 +86,6 @@ const Github = () => {
     const render = (time: DOMHighResTimeStamp) => {
       three.controls.update();
       target.rotation.y = time;
-
-      stats.update();
     };
 
     three.addRenderCallback(render);
