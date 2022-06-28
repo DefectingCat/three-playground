@@ -29,7 +29,7 @@ class RUAThree {
 
   scene = new SceneWithTracker(this.tracker);
   camera = new THREE.PerspectiveCamera(
-    75,
+    45,
     window.innerWidth / window.innerHeight,
     0.1,
     1000

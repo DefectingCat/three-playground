@@ -54,9 +54,22 @@ const GLTF = () => {
       const color = 0xffffff;
       const intensity = 0.8;
       const light = new THREE.DirectionalLight(color, intensity);
-      light.position.set(5, 10, 2);
+      light.castShadow = true;
+      light.shadow.bias = -0.004;
+      light.shadow.mapSize.width = 2048;
+      light.shadow.mapSize.height = 2048;
+      light.position.set(-250, 800, -850);
+      light.target.position.set(-550, 40, -450);
       three.scene.add(light);
       three.scene.add(light.target);
+
+      const cam = light.shadow.camera;
+      cam.near = 1;
+      cam.far = 2000;
+      cam.left = -1500;
+      cam.right = 1500;
+      cam.top = 1500;
+      cam.bottom = -1500;
     }
 
     gltfLoader.load(
@@ -65,11 +78,17 @@ const GLTF = () => {
         const root = gltf.scene;
         three.scene.add(root);
 
+        root.traverse((obj) => {
+          if (obj.castShadow != null) {
+            obj.castShadow = true;
+            obj.receiveShadow = true;
+          }
+        });
+
         const box = new THREE.Box3().setFromObject(root);
 
         const boxSize = box.getSize(new THREE.Vector3()).length();
         const boxCenter = box.getCenter(new THREE.Vector3());
-        console.log(box, boxSize, boxCenter);
 
         frameArea(boxSize * 0.5, boxSize, boxCenter, three.camera);
 
@@ -80,6 +99,8 @@ const GLTF = () => {
     );
 
     three.controls.enableDamping = true;
+
+    three.scene.background = new THREE.Color('#DEFEFF');
 
     const render = (time: DOMHighResTimeStamp) => {
       three.controls.update();
