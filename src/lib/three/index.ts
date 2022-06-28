@@ -56,7 +56,7 @@ class RUAThree {
     this.render = this.render.bind(this);
     requestAnimationFrame(this.render);
 
-    window.addEventListener('resize', this.onWindowResize);
+    window.addEventListener('resize', this.onWindowResize.bind(this));
 
     process.env.NODE_ENV === 'development' && (this.tracker.debug = true);
   }
