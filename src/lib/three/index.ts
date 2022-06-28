@@ -52,25 +52,32 @@ class RUAThree {
     // Set controls rotate inversion must be in constructor.
     if (rotateInversion) this.controls.rotateSpeed *= -1;
 
-    // Callback needs to be bound to the correct 'this'.
     this.render = this.render.bind(this);
-    requestAnimationFrame(this.render);
+    this.requestRender = this.requestRender.bind(this);
+    this.onWindowResize = this.onWindowResize.bind(this);
 
-    window.addEventListener('resize', this.onWindowResize.bind(this));
+    this.controls.addEventListener('change', this.requestRender);
+    window.addEventListener('resize', this.onWindowResize);
 
     process.env.NODE_ENV === 'development' && (this.tracker.debug = true);
   }
 
   private renderQueue: ((time: DOMHighResTimeStamp) => void)[] = [];
+  private renderRequested = false;
 
   private time: DOMHighResTimeStamp = 0;
   private render(time: DOMHighResTimeStamp) {
+    this.renderRequested = false;
     this.time = time *= 0.001;
-
     this.renderer.render(this.scene, this.camera);
-
     this.renderQueue.map((cb) => cb(this.time));
 
+    // requestAnimationFrame(this.render);
+  }
+
+  private requestRender() {
+    if (this.renderRequested) return;
+    this.renderRequested = true;
     requestAnimationFrame(this.render);
   }
 
