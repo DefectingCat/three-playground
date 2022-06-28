@@ -12,7 +12,9 @@ const manager = new THREE.LoadingManager();
 const loader = new STLLoader(manager);
 
 const Github = () => {
-  const { three, threeWrapper } = useThree();
+  const { three, threeWrapper } = useThree({
+    renderOnDemand: false,
+  });
   const { stats } = useStats();
 
   useEffect(() => {
@@ -79,7 +81,6 @@ const Github = () => {
 
     three.camera.position.set(0, 0, 100);
     three.controls.target.set(0, 0, 0);
-    three.controls.enableDamping = true;
     three.controls.maxPolarAngle = Math.PI * 0.5;
     three.controls.maxDistance = 200;
     three.controls.minDistance = 50;
@@ -92,6 +93,7 @@ const Github = () => {
     };
 
     three.addRenderCallback(render);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

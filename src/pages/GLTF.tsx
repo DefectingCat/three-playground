@@ -24,6 +24,8 @@ function frameArea(
   // in whatever direction the camera was from the center already
   camera.position.copy(direction.multiplyScalar(distance).add(boxCenter));
 
+  console.log(boxSize, boxCenter);
+
   // pick some near and far values for the frustum that
   // will contain the box.
   camera.near = boxSize / 100;
@@ -97,8 +99,6 @@ const GLTF = () => {
         three.controls.update();
       }
     );
-
-    three.controls.enableDamping = true;
 
     three.scene.background = new THREE.Color('#DEFEFF');
 

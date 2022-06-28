@@ -21,6 +21,7 @@ const sky = new THREE.CubeTextureLoader(manager).load([
 const Corona = () => {
   const { three, threeWrapper } = useThree({
     rotateInversion: true,
+    renderOnDemand: false,
   });
   const { stats } = useStats();
 

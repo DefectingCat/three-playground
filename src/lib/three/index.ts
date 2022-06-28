@@ -17,11 +17,13 @@ class SceneWithTracker extends THREE.Scene {
 export type ThreeProps = {
   rotateInversion?: boolean;
   antialias?: boolean;
+  renderOnDemand?: boolean;
 };
 
 export const defaultProps = {
   rotateInversion: false,
   antialias: true,
+  renderOnDemand: true,
 };
 
 class RUAThree {
@@ -37,7 +39,7 @@ class RUAThree {
   renderer: THREE.WebGLRenderer;
   controls: OrbitControls;
 
-  constructor({ rotateInversion, antialias }: ThreeProps) {
+  constructor({ rotateInversion, antialias, renderOnDemand }: ThreeProps) {
     this.renderer = new THREE.WebGLRenderer({ antialias });
     this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -48,21 +50,31 @@ class RUAThree {
     // renderer.outputEncoding = THREE.sRGBEncoding;
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-    this.controls.update();
+    this.controls.enableDamping = true;
     // Set controls rotate inversion must be in constructor.
     if (rotateInversion) this.controls.rotateSpeed *= -1;
+    this.controls.update();
+
+    this.renderOnDemand = renderOnDemand ?? true;
 
     this.render = this.render.bind(this);
     this.requestRender = this.requestRender.bind(this);
     this.onWindowResize = this.onWindowResize.bind(this);
 
-    this.controls.addEventListener('change', this.requestRender);
+    if (this.renderOnDemand) {
+      this.controls.addEventListener('change', this.requestRender);
+      this.requestRender();
+    } else {
+      requestAnimationFrame(this.render);
+    }
+
     window.addEventListener('resize', this.onWindowResize);
 
     process.env.NODE_ENV === 'development' && (this.tracker.debug = true);
   }
 
   private renderQueue: ((time: DOMHighResTimeStamp) => void)[] = [];
+  private renderOnDemand = true;
   private renderRequested = false;
 
   private time: DOMHighResTimeStamp = 0;
@@ -72,7 +84,7 @@ class RUAThree {
     this.renderer.render(this.scene, this.camera);
     this.renderQueue.map((cb) => cb(this.time));
 
-    // requestAnimationFrame(this.render);
+    !this.renderOnDemand && requestAnimationFrame(this.render);
   }
 
   private requestRender() {
