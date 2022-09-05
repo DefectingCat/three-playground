@@ -20,12 +20,16 @@ export type ThreeProps = {
   rotateInversion?: boolean;
   antialias?: boolean;
   renderOnDemand?: boolean;
+  width?: number;
+  height?: number;
 };
 
-export const defaultProps = {
+export const defaultProps: Partial<ThreeProps> = {
   rotateInversion: false,
   antialias: true,
   renderOnDemand: true,
+  width: window.innerWidth,
+  height: window.innerHeight,
 };
 
 class RUAThree {
@@ -42,10 +46,19 @@ class RUAThree {
   controls: OrbitControls;
   stats: Stats | null = null;
 
-  constructor({ rotateInversion, antialias, renderOnDemand }: ThreeProps) {
+  constructor({
+    rotateInversion,
+    antialias,
+    renderOnDemand,
+    width,
+    height,
+  }: ThreeProps) {
     this.renderer = new THREE.WebGLRenderer({ antialias });
     this.renderer.setPixelRatio(window.devicePixelRatio);
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.renderer.setSize(
+      width ?? window.innerWidth,
+      height ?? window.innerHeight
+    );
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1;
     this.renderer.shadowMap.enabled = true;
