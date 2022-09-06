@@ -23,6 +23,7 @@ export type ThreeProps = {
   width?: number;
   height?: number;
   perspectiveCamera?: boolean;
+  alpha?: boolean;
 };
 
 export const defaultProps: Partial<ThreeProps> = {
@@ -32,6 +33,7 @@ export const defaultProps: Partial<ThreeProps> = {
   width: window.innerWidth,
   height: window.innerHeight,
   perspectiveCamera: true,
+  alpha: false,
 };
 
 class RUAThree {
@@ -53,8 +55,9 @@ class RUAThree {
     width,
     height,
     perspectiveCamera,
+    alpha,
   }: ThreeProps) {
-    this.renderer = new THREE.WebGLRenderer({ antialias });
+    this.renderer = new THREE.WebGLRenderer({ antialias, alpha });
     this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.setSize(
       width ?? window.innerWidth,
