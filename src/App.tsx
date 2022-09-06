@@ -8,6 +8,7 @@ const Github = lazy(() => import('pages/Github'));
 const GLTF = lazy(() => import('pages/GLTF'));
 const Around = lazy(() => import('pages/Around'));
 const Solar = lazy(() => import('pages/Solar'));
+const MousePick = lazy(() => import('pages/MousePick'));
 
 export const projects = [
   {
@@ -45,6 +46,12 @@ export const projects = [
     path: '/solar',
     name: 'Solar',
     element: <Solar />,
+  },
+  {
+    id: 6,
+    path: '/pick',
+    name: 'MousePick',
+    element: <MousePick />,
   },
 ];
 
