@@ -1,6 +1,6 @@
 import useThree, { THREE } from 'lib/hooks/useThree';
 import MousePicker from 'lib/three/MousePicker';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { getCanvasRelativePosition } from 'utils';
 import generateCubes from 'utils/generateCube';
 
