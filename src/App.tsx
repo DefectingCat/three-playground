@@ -6,6 +6,7 @@ const HelloCube = lazy(() => import('pages/HelloCube'));
 const Corona = lazy(() => import('pages/Corona'));
 const Github = lazy(() => import('pages/Github'));
 const GLTF = lazy(() => import('pages/GLTF'));
+const Around = lazy(() => import('pages/Around'));
 
 export const projects = [
   {
@@ -31,6 +32,12 @@ export const projects = [
     path: '/gltf',
     name: 'GLTF',
     element: <GLTF />,
+  },
+  {
+    id: 4,
+    path: '/around',
+    name: 'Around',
+    element: <Around />,
   },
 ];
 
