@@ -36,12 +36,7 @@ class RUAThree {
   tracker = new ResourceTracker();
 
   scene = new SceneWithTracker(this.tracker);
-  camera = new THREE.PerspectiveCamera(
-    50,
-    window.innerWidth / window.innerHeight,
-    0.1,
-    1000
-  );
+  camera: THREE.PerspectiveCamera;
   renderer: THREE.WebGLRenderer;
   controls: OrbitControls;
   stats: Stats | null = null;
@@ -64,6 +59,13 @@ class RUAThree {
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     // renderer.outputEncoding = THREE.sRGBEncoding;
+
+    this.camera = new THREE.PerspectiveCamera(
+      50,
+      (width ?? window.innerWidth) / (height ?? window.innerHeight),
+      0.1,
+      1000
+    );
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableDamping = true;

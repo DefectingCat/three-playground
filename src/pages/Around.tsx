@@ -7,15 +7,19 @@ const Around = () => {
   });
 
   useEffect(() => {
+    // {
+    //   const skyColor = '#fff'; // light blue
+    //   const intensity = 0.6;
+    //   const light = new THREE.HemisphereLight(skyColor, undefined, intensity);
+    //   three.scene.add(light);
+    // }
     {
-      const skyColor = '#fff'; // light blue
-      const intensity = 0.6;
-      const light = new THREE.HemisphereLight(skyColor, undefined, intensity);
+      const light = new THREE.AmbientLight('#fff', 0.6);
       three.scene.add(light);
     }
 
     {
-      const planeGeometry = new THREE.PlaneGeometry(10, 10);
+      const planeGeometry = new THREE.PlaneGeometry(20, 20);
       const material = new THREE.MeshStandardMaterial({
         color: '#7e7e7e',
         side: THREE.DoubleSide,
@@ -32,13 +36,22 @@ const Around = () => {
       emissive: 'rgb(0,0,0)',
     });
     const target = new THREE.Object3D();
+    // {
+    //   const sphereGeo = new THREE.SphereGeometry(1, 32, 16);
+    //   const sphere = new THREE.Mesh(sphereGeo, material);
+    //   sphere.castShadow = true;
+    //   sphere.receiveShadow = true;
+    //   sphere.position.set(0, 2, 0);
+    //   three.scene.add(sphere);
+    // }
     {
-      const sphereGeo = new THREE.SphereGeometry(1, 32, 16);
-      const sphere = new THREE.Mesh(sphereGeo, material);
-      sphere.castShadow = true;
-      sphere.receiveShadow = true;
-      sphere.position.set(0, 2, 0);
-      three.scene.add(sphere);
+      const boxGeo = new THREE.BoxGeometry(2, 2, 2);
+      const box = new THREE.Mesh(boxGeo, material);
+      box.castShadow = true;
+      box.receiveShadow = true;
+      box.position.set(0, 2, 0);
+      box.add(target);
+      three.scene.add(box);
     }
 
     {
@@ -48,9 +61,8 @@ const Around = () => {
       sphere.receiveShadow = true;
       sphere.position.set(-2, 0, 0);
 
-      target.position.set(0, 2, 0);
+      // target.position.set(0, 2, 0);
       target.add(sphere);
-      three.scene.add(target);
     }
 
     const light = new THREE.SpotLight('rgb(255,255,255)', 1, 0, 0.3);
