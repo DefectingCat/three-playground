@@ -7,6 +7,7 @@ const Corona = lazy(() => import('pages/Corona'));
 const Github = lazy(() => import('pages/Github'));
 const GLTF = lazy(() => import('pages/GLTF'));
 const Around = lazy(() => import('pages/Around'));
+const Solar = lazy(() => import('pages/Solar'));
 
 export const projects = [
   {
@@ -38,6 +39,12 @@ export const projects = [
     path: '/around',
     name: 'Around',
     element: <Around />,
+  },
+  {
+    id: 5,
+    path: '/solar',
+    name: 'Solar',
+    element: <Solar />,
   },
 ];
 
