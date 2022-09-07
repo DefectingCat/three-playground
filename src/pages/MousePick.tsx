@@ -13,8 +13,8 @@ const MousePick = () => {
 
   useEffect(() => {
     let pickPosition = {
-      x: 0,
-      y: 0,
+      x: -Infinity,
+      y: -Infinity,
     };
     let lastObject: THREE.Object3D | null = null;
     let lastColor: number | null = null;
@@ -39,14 +39,14 @@ const MousePick = () => {
     }
 
     function pickColor(time: DOMHighResTimeStamp) {
-      if (lastObject && lastColor) {
+      if (lastObject && lastColor != null) {
         if (!(lastObject instanceof THREE.Mesh)) return;
         if (!mousePicker.checkMaterial(lastObject.material)) return;
         lastObject.material.emissive.setHex(lastColor);
         lastObject = null;
+        lastColor = null;
       }
       lastObject = mousePicker.pick(pickPosition, three.scene, three.camera);
-      console.log(lastObject);
       if (!lastObject) return;
       if (!(lastObject instanceof THREE.Mesh)) return;
       if (!mousePicker.checkMaterial(lastObject.material)) return;
