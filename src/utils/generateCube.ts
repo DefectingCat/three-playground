@@ -16,19 +16,18 @@ function randomColor() {
   return `hsl(${rand(360) | 0}, ${rand(50, 100) | 0}%, 50%)`;
 }
 
-function generateCubes(num = 100, boxWidth = 1, boxHeight = 1, boxDepth = 1) {
+export function generateCartoonCubes(
+  num = 100,
+  boxWidth = 1,
+  boxHeight = 1,
+  boxDepth = 1
+) {
   const group = new THREE.Group();
-  const pickingGroup = new THREE.Group();
-
   const geometry = new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth);
+
   for (let i = 0; i < num; ++i) {
-    const id = i + 1;
-    const material = new THREE.MeshStandardMaterial({
+    const material = new THREE.MeshToonMaterial({
       color: randomColor(),
-      map: texture,
-      transparent: true,
-      side: THREE.DoubleSide,
-      alphaTest: 0.1,
     });
 
     const cube = new THREE.Mesh(geometry, material);
@@ -37,11 +36,39 @@ function generateCubes(num = 100, boxWidth = 1, boxHeight = 1, boxDepth = 1) {
     cube.scale.set(rand(3, 6), rand(3, 6), rand(3, 6));
 
     group.add(cube);
+  }
 
-    const pickingMaterial = new THREE.MeshStandardMaterial({
+  return group;
+}
+
+function generateCubes(num = 100, boxWidth = 1, boxHeight = 1, boxDepth = 1) {
+  const group = new THREE.Group();
+  const pickingGroup = new THREE.Group();
+
+  const idToObject: { [key: string]: THREE.Mesh } = {};
+
+  const geometry = new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth);
+  for (let i = 0; i < num; ++i) {
+    const id = i + 1;
+    const material = new THREE.MeshPhongMaterial({
+      color: randomColor(),
+      map: texture,
+      transparent: true,
+      side: THREE.DoubleSide,
+      alphaTest: 0.5,
+    });
+
+    const cube = new THREE.Mesh(geometry, material);
+    cube.position.set(rand(-20, 20), rand(-20, 20), rand(-20, 20));
+    cube.rotation.set(rand(Math.PI), rand(Math.PI), 0);
+    cube.scale.set(rand(3, 6), rand(3, 6), rand(3, 6));
+    group.add(cube);
+    idToObject[id] = cube;
+
+    const pickingMaterial = new THREE.MeshPhongMaterial({
       emissive: new THREE.Color(id),
       color: new THREE.Color(0, 0, 0),
-      // specular: new THREE.Color(0, 0, 0),
+      specular: new THREE.Color(0, 0, 0),
       map: texture,
       transparent: true,
       side: THREE.DoubleSide,
@@ -58,6 +85,7 @@ function generateCubes(num = 100, boxWidth = 1, boxHeight = 1, boxDepth = 1) {
   return {
     cubes: group,
     pickingCubes: pickingGroup,
+    idToObject,
   };
 }
 

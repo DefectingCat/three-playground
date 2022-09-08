@@ -1,17 +1,28 @@
 import useThree, { THREE } from 'lib/hooks/useThree';
-import { MousePicker } from 'lib/three/MousePicker';
+import { GPUPicker } from 'lib/three/MousePicker';
 import { useEffect } from 'react';
 import { getCanvasRelativePosition } from 'utils';
-import { generateCartoonCubes } from 'utils/generateCube';
-
-const mousePicker = new MousePicker();
+import generateCubes from 'utils/generateCube';
 
 const MousePick = () => {
   const { three, threeWrapper } = useThree({
     renderOnDemand: false,
+    width: window.innerWidth / 2,
+  });
+  const { three: three2, threeWrapper: tw2 } = useThree({
+    renderOnDemand: false,
+    width: window.innerWidth / 2,
   });
 
   useEffect(() => {
+    const { cubes, pickingCubes, idToObject } = generateCubes();
+    const mousePicker = new GPUPicker(three.renderer, idToObject);
+    const pickingScene = new THREE.Scene();
+    pickingScene.background = new THREE.Color(0);
+
+    three.scene.add(cubes);
+    pickingScene.add(pickingCubes);
+
     let pickPosition = {
       x: -Infinity,
       y: -Infinity,
@@ -24,8 +35,8 @@ const MousePick = () => {
       const canvas = threeWrapper.current.children[0];
       if (!(canvas instanceof HTMLCanvasElement)) return;
       const pos = getCanvasRelativePosition(e, canvas);
-      pickPosition.x = (pos.x / canvas.width) * 2 - 1;
-      pickPosition.y = (pos.y / canvas.height) * -2 + 1; // note we flip Y
+      pickPosition.x = pos.x;
+      pickPosition.y = pos.y;
     };
 
     function clearPickPosition() {
@@ -39,6 +50,7 @@ const MousePick = () => {
     }
 
     function pickColor(time: DOMHighResTimeStamp) {
+      if (!(three.camera instanceof THREE.PerspectiveCamera)) return;
       if (lastObject && lastColor != null) {
         if (!(lastObject instanceof THREE.Mesh)) return;
         if (!mousePicker.checkMaterial(lastObject.material)) return;
@@ -46,7 +58,7 @@ const MousePick = () => {
         lastObject = null;
         lastColor = null;
       }
-      lastObject = mousePicker.pick(pickPosition, three.scene, three.camera);
+      lastObject = mousePicker.pick(pickPosition, pickingScene, three.camera);
       if (!lastObject) return;
       if (!(lastObject instanceof THREE.Mesh)) return;
       if (!mousePicker.checkMaterial(lastObject.material)) return;
@@ -58,21 +70,24 @@ const MousePick = () => {
 
     three.scene.background = new THREE.Color('#DEFEFF');
     three.camera.position.set(0, 0, 65);
+    three2.camera.position.set(0, 0, 65);
 
-    const cubes = generateCartoonCubes();
-    three.controls.autoRotate = true;
-    three.controls.autoRotateSpeed = 0.6;
+    // three.controls.autoRotate = true;
+    // three.controls.autoRotateSpeed = 0.6;
 
     {
       const light = new THREE.AmbientLight(0xffffff, 0.6);
       three.scene.add(light);
     }
 
-    three.scene.add(cubes);
-
     three.addRenderCallback((time) => {
+      three.renderer.render(three.scene, three.camera);
       three.controls.update();
       pickColor(time);
+    });
+    three2.addRenderCallback((time) => {
+      three2.renderer.render(pickingScene, three2.camera);
+      three2.controls.update();
     });
 
     threeWrapper.current?.addEventListener('mousemove', setPickPosition);
@@ -89,9 +104,14 @@ const MousePick = () => {
   }, []);
 
   return (
-    <>
+    <div
+      style={{
+        display: 'flex',
+      }}
+    >
       <div ref={threeWrapper}></div>
-    </>
+      <div ref={tw2}></div>
+    </div>
   );
 };
 

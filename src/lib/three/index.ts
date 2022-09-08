@@ -122,7 +122,7 @@ class RUAThree {
   private render(time: DOMHighResTimeStamp) {
     this.renderRequested = false;
     this.time = time *= 0.001;
-    this.renderer.render(this.scene, this.camera);
+    // this.renderer.render(this.scene, this.camera);
     this.renderQueue.map((cb) => cb(this.time));
     this.stats && this.stats.update();
 
