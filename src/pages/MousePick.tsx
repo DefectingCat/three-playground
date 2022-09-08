@@ -1,5 +1,5 @@
 import useThree, { THREE } from 'lib/hooks/useThree';
-import MousePicker from 'lib/three/MousePicker';
+import { MousePicker } from 'lib/three/MousePicker';
 import { useEffect } from 'react';
 import { getCanvasRelativePosition } from 'utils';
 import generateCubes from 'utils/generateCube';
@@ -12,6 +12,9 @@ const MousePick = () => {
   });
 
   useEffect(() => {
+    const pickingScene = new THREE.Scene();
+    pickingScene.background = new THREE.Color(0);
+
     let pickPosition = {
       x: -Infinity,
       y: -Infinity,
@@ -24,8 +27,10 @@ const MousePick = () => {
       const canvas = threeWrapper.current.children[0];
       if (!(canvas instanceof HTMLCanvasElement)) return;
       const pos = getCanvasRelativePosition(e, canvas);
-      pickPosition.x = (pos.x / canvas.width) * 2 - 1;
-      pickPosition.y = (pos.y / canvas.height) * -2 + 1; // note we flip Y
+      // pickPosition.x = (pos.x / canvas.width) * 2 - 1;
+      // pickPosition.y = (pos.y / canvas.height) * -2 + 1; // note we flip Y
+      pickPosition.x = pos.x;
+      pickPosition.y = pos.y;
     };
 
     function clearPickPosition() {
@@ -59,7 +64,7 @@ const MousePick = () => {
     three.scene.background = new THREE.Color('#DEFEFF');
     three.camera.position.set(0, 0, 65);
 
-    const cubes = generateCubes();
+    const { cubes, pickingCubes } = generateCubes();
     three.controls.autoRotate = true;
     three.controls.autoRotateSpeed = 0.6;
 
@@ -69,6 +74,7 @@ const MousePick = () => {
     }
 
     three.scene.add(cubes);
+    pickingScene.add(pickingCubes);
 
     three.addRenderCallback((time) => {
       three.controls.update();

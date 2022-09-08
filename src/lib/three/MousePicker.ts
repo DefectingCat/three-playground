@@ -8,7 +8,7 @@ import {
   Scene,
 } from 'three';
 
-class MousePicker {
+export class MousePicker {
   raycaster = new Raycaster();
 
   pick(
@@ -42,5 +42,3 @@ class MousePicker {
     );
   }
 }
-
-export default MousePicker;
