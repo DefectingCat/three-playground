@@ -22,17 +22,14 @@ export type ThreeProps = {
   renderOnDemand?: boolean;
   width?: number;
   height?: number;
-  perspectiveCamera?: boolean;
   alpha?: boolean;
+  canvas?: HTMLCanvasElement | null;
 };
 
 export const defaultProps: Partial<ThreeProps> = {
   rotateInversion: false,
   antialias: true,
   renderOnDemand: true,
-  width: window.innerWidth,
-  height: window.innerHeight,
-  perspectiveCamera: true,
   alpha: false,
 };
 
@@ -40,11 +37,13 @@ class RUAThree {
   tracker = new ResourceTracker();
 
   scene = new SceneWithTracker(this.tracker);
-  camera: THREE.PerspectiveCamera | THREE.OrthographicCamera;
+  camera: THREE.PerspectiveCamera;
   renderer: THREE.WebGLRenderer;
   controls: OrbitControls;
   stats: Stats | null = null;
 
+  private width: number | null | undefined = null;
+  private height: number | null | undefined = null;
   protected cameraWidth = window.innerWidth;
   protected cameraHeight = window.innerHeight;
 
@@ -54,36 +53,33 @@ class RUAThree {
     renderOnDemand,
     width,
     height,
-    perspectiveCamera,
     alpha,
+    canvas,
   }: ThreeProps) {
-    this.renderer = new THREE.WebGLRenderer({ antialias, alpha });
+    this.width = width;
+    this.height = height;
+    this.cameraWidth = this.width ?? window.innerWidth;
+    this.cameraHeight = this.height ?? window.innerHeight;
+
+    this.renderer = new THREE.WebGLRenderer({
+      antialias,
+      alpha,
+      canvas: canvas ?? undefined,
+    });
     this.renderer.setPixelRatio(window.devicePixelRatio);
-    this.renderer.setSize(
-      width ?? window.innerWidth,
-      height ?? window.innerHeight
-    );
+    this.renderer.setSize(this.cameraWidth, this.cameraHeight);
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1;
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     // renderer.outputEncoding = THREE.sRGBEncoding;
 
-    this.camera = perspectiveCamera
-      ? new THREE.PerspectiveCamera(
-          50,
-          this.cameraWidth / this.cameraHeight,
-          0.1,
-          1000
-        )
-      : new THREE.OrthographicCamera(
-          this.cameraWidth / -2,
-          this.cameraWidth / 2,
-          this.cameraHeight / 2,
-          this.cameraHeight / -2,
-          0.1,
-          1000
-        );
+    this.camera = new THREE.PerspectiveCamera(
+      50,
+      this.cameraWidth / this.cameraHeight,
+      0.1,
+      1000
+    );
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableDamping = true;
@@ -122,7 +118,7 @@ class RUAThree {
   private render(time: DOMHighResTimeStamp) {
     this.renderRequested = false;
     this.time = time *= 0.001;
-    // this.renderer.render(this.scene, this.camera);
+    this.renderer.render(this.scene, this.camera);
     this.renderQueue.map((cb) => cb(this.time));
     this.stats && this.stats.update();
 
@@ -136,17 +132,12 @@ class RUAThree {
   }
 
   private onWindowResize() {
-    if (this.camera instanceof THREE.PerspectiveCamera) {
-      this.camera.aspect = window.innerWidth / window.innerHeight;
-    } else {
-      this.camera.left = this.cameraWidth / -2;
-      this.camera.left = this.cameraWidth / 2;
-      this.camera.left = this.cameraHeight / 2;
-      this.camera.left = this.cameraHeight / -2;
-    }
+    console.log(this.width, this.height);
+    this.cameraWidth = this.width ?? window.innerWidth;
+    this.cameraHeight = this.height ?? window.innerHeight;
+    this.camera.aspect = this.cameraWidth / this.cameraHeight;
     this.camera.updateProjectionMatrix();
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
-
+    this.renderer.setSize(this.cameraWidth, this.cameraHeight);
     this.render(this.time);
   }
 
@@ -158,13 +149,10 @@ class RUAThree {
     sizeToFitOnScreen: number,
     boxSize: number,
     boxCenter: Vector3,
-    camera: THREE.PerspectiveCamera | THREE.OrthographicCamera
+    camera: THREE.PerspectiveCamera
   ) {
     const halfSizeToFitOnScreen = sizeToFitOnScreen * 0.5;
-    const halfFovY =
-      camera instanceof THREE.PerspectiveCamera
-        ? THREE.MathUtils.degToRad(camera.fov * 0.5)
-        : 0;
+    const halfFovY = THREE.MathUtils.degToRad(camera.fov * 0.5);
     const distance = halfSizeToFitOnScreen / Math.tan(halfFovY);
     // compute a unit vector that points in the direction the camera is now
     // in the xz plane from the center of the box
