@@ -29,7 +29,7 @@ export type ThreeProps = {
 export const defaultProps: Partial<ThreeProps> = {
   rotateInversion: false,
   antialias: true,
-  renderOnDemand: true,
+  renderOnDemand: false,
   alpha: false,
 };
 
@@ -81,7 +81,7 @@ class RUAThree {
       1000
     );
 
-    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    this.controls = new OrbitControls(this.camera, canvas ?? undefined);
     this.controls.enableDamping = true;
     // Set controls rotate inversion must be in constructor.
     if (rotateInversion) this.controls.rotateSpeed *= -1;
@@ -132,7 +132,6 @@ class RUAThree {
   }
 
   private onWindowResize() {
-    console.log(this.width, this.height);
     this.cameraWidth = this.width ?? window.innerWidth;
     this.cameraHeight = this.height ?? window.innerHeight;
     this.camera.aspect = this.cameraWidth / this.cameraHeight;
@@ -141,7 +140,13 @@ class RUAThree {
     this.render(this.time);
   }
 
-  addRenderCallback(cb: (time: DOMHighResTimeStamp) => void) {
+  /**
+   * Add render funtion into requestAnimationFrame.
+   *
+   * callback time is `DOMHighResTimeStamp * 0.001`
+   * @param cb `(time: number) => void`
+   */
+  addRenderCallback(cb: (time: number) => void) {
     this.renderQueue.push(cb);
   }
 

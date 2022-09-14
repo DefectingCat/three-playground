@@ -1,7 +1,7 @@
 import useThree, { THREE } from 'lib/hooks/v2/useThree';
 import RUAThree from 'lib/three';
 
-const renderFn = (three: RUAThree) => {
+const init = (three: RUAThree) => {
   // {
   //   const skyColor = '#fff'; // light blue
   //   const intensity = 0.6;
@@ -69,7 +69,7 @@ const renderFn = (three: RUAThree) => {
   three.camera.position.set(0, 8, 18);
   three.controls.maxPolarAngle = Math.PI / 2;
 
-  const render = (time: DOMHighResTimeStamp) => {
+  const render = (time: number) => {
     three.controls.update();
     target.rotation.y = time;
   };
@@ -81,8 +81,7 @@ const renderFn = (three: RUAThree) => {
 
 const Around = () => {
   const { ref } = useThree({
-    renderOnDemand: false,
-    renderFn,
+    init,
   });
 
   return (

@@ -2,15 +2,16 @@ import RUAThree, { defaultProps, ThreeProps } from 'lib/three';
 import { useEffect, useRef } from 'react';
 
 type Props = {
-  renderFn: (three: RUAThree) => void;
+  init: (three: RUAThree) => void;
 } & ThreeProps;
 
 const useThree = (props: Props) => {
   const ref = useRef<HTMLCanvasElement>(null);
   const three = useRef<RUAThree>();
 
-  // Cleanup
   useEffect(() => {
+    // When React created the canvas element.
+    // pass to renderer
     const threeProps = {
       ...defaultProps,
       canvas: ref.current,
@@ -19,11 +20,13 @@ const useThree = (props: Props) => {
       props ? { ...threeProps, ...props } : threeProps
     );
 
-    props.renderFn(three.current);
+    props.init(three.current);
 
+    // Cleanup
     return () => {
       three.current?.clear();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {
