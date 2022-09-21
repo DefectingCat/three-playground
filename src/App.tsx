@@ -10,6 +10,7 @@ const Around = lazy(() => import('pages/Around'));
 const Solar = lazy(() => import('pages/Solar'));
 const MousePick = lazy(() => import('pages/MousePick'));
 const GPUMousePick = lazy(() => import('pages/GPUMousePick'));
+const PositionHelper = lazy(() => import('pages/PositionHelper'));
 
 export const projects = [
   {
@@ -59,6 +60,12 @@ export const projects = [
     path: '/gpu-pick',
     name: 'GPUMousePick',
     element: <GPUMousePick />,
+  },
+  {
+    id: 8,
+    path: '/position-helper',
+    name: 'PositionHelper',
+    element: <PositionHelper />,
   },
 ];
 
