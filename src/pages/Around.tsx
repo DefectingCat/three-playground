@@ -1,7 +1,7 @@
-import useThree, { THREE } from 'lib/hooks/v2/useThree';
-import RUAThree from 'lib/three';
+import { useThree, THREE } from 'rua-three';
+import { InitFn } from 'rua-three/lib/esm/hooks/useThree';
 
-const init = (three: RUAThree) => {
+const init: InitFn = ({ scene, camera, controls, addRenderCallback }) => {
   // {
   //   const skyColor = '#fff'; // light blue
   //   const intensity = 0.6;
@@ -10,7 +10,7 @@ const init = (three: RUAThree) => {
   // }
   {
     const light = new THREE.AmbientLight('#fff', 0.6);
-    three.scene.add(light);
+    scene.add(light);
   }
 
   {
@@ -22,7 +22,7 @@ const init = (three: RUAThree) => {
     const plane = new THREE.Mesh(planeGeometry, material);
     plane.rotateX(Math.PI / 2);
     plane.receiveShadow = true;
-    three.scene.add(plane);
+    scene.add(plane);
   }
 
   const material = new THREE.MeshPhongMaterial({
@@ -46,7 +46,7 @@ const init = (three: RUAThree) => {
     box.receiveShadow = true;
     box.position.set(0, 2, 0);
     box.add(target);
-    three.scene.add(box);
+    scene.add(box);
   }
 
   {
@@ -62,19 +62,19 @@ const init = (three: RUAThree) => {
 
   const light = new THREE.SpotLight('rgb(255,255,255)', 1, 0, 0.3);
   light.position.set(7.822, 7.432, 1.905);
-  // three.scene.add(new THREE.SpotLightHelper(light));
+  // scene.add(new THREE.SpotLightHelper(light));
   light.castShadow = true;
-  three.scene.add(light);
+  scene.add(light);
 
-  three.camera.position.set(0, 8, 18);
-  three.controls.maxPolarAngle = Math.PI / 2;
+  camera.position.set(0, 8, 18);
+  controls.maxPolarAngle = Math.PI / 2;
 
   const render = (time: number) => {
-    three.controls.update();
+    controls.update();
     target.rotation.y = time;
   };
 
-  three.addRenderCallback(render);
+  addRenderCallback(render);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
 };
